@@ -1,5 +1,6 @@
 package es.cifpcm.carruselImagenes;
 
+
 import es.cifpcm.carruselImagenes.controller.ImageManagerServlet;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,12 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class CarruselImagenesApplication {
 
 	public static void main(String[] args) {
-	//	SpringApplication.run(CarruselImagenesApplication.class, args);
-
-		ImageManagerServlet img= new ImageManagerServlet();
-		img.PostgestionFichero();
-		img.GetgestionFichero();
-
+		SpringApplication.run(CarruselImagenesApplication.class, args);
 	}
 
 }

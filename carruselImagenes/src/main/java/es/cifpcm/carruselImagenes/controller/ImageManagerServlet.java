@@ -1,79 +1,74 @@
 package es.cifpcm.carruselImagenes.controller;
 
-import org.apache.commons.io.IOUtils;
-import org.springframework.http.MediaType;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 
 //Se ha definido un limite de 10MB de subida
 @Controller
 public class ImageManagerServlet {
-    File ficheroUpdown;
     String FILEPATH = "src\\main\\resources\\uploadsJimenezGonzalez";
 
 
-    public void PostgestionFichero() {
-
-        // Crear objeto File
-        File folder = new File(FILEPATH);
-//        InputStream imageInputStream = obtainImageInputStream();
+    @PostMapping("/subidaImagen")
+    public String PostgestionFichero(@RequestParam MultipartFile img, HttpSession laSession) {
 
 
-        // Comprobar si la carpeta existe
-        if (folder.exists()) {
-//            Files.copy(imageInputStream, FILEPATH, StandardCopyOption.COPY_ATTRIBUTES);
-        } else {
-            System.out.println("La carpeta no existe.");
+        if (img != null) {
+
+            try {
+                File guardado = new ClassPathResource(FILEPATH).getFile();
+                Path ruta = Paths.get(guardado.getAbsolutePath() + File.separator + img.getOriginalFilename());
+                Files.copy(img.getInputStream(), ruta, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                System.out.println("Hubo un problema al abrir el archivo: traza completa " + e.getLocalizedMessage());
+            }
+
+            laSession.setAttribute("mensaje", "Imagen subida con exito");
+
         }
+
+        return "redirect:/{pagina de visualizacion}";
     }
 
+    // Hay 2 versiones prueba si alguna de las dos te vale, deberian servir ambas pero por si acaso
 
+    @GetMapping("/obtenerImagen")
     public void GetgestionFichero() {
 
         File ficheros = new File(FILEPATH);
-
+        List<String> lista = new ArrayList<>();
         for (final File f : ficheros.listFiles()) {
-            System.out.println(f.getName());
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(f));
-                System.out.println("file content: ");
-                int r = 0;
-                while ((r = br.read()) != -1) {
-                    System.out.print((char) r);
-                }
-                System.out.print("\n");
-            } catch (Exception e) {
-                //e.printStackTrace();
-                System.out.println("Hubo un problema al abrir el archivo: traza completa "+e.getLocalizedMessage());
-            }
+            lista.add(f.getAbsolutePath());
+        }
+
+    }
+
+    @GetMapping("/obtenerImagenV2")
+    public void prueba(){
+        String dir = FILEPATH;
+        List<String> lista = new ArrayList<>();
+        try (Stream<Path> paths = Files.walk(Paths.get(dir))) {
+            paths
+                    .filter(Files::isRegularFile)
+                    .forEach(path -> lista.add(path.toString()));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-
-
-    @GetMapping(
-            value = "/get-image-with-media-type",
-            produces = MediaType.IMAGE_JPEG_VALUE
-    )
-    public @ResponseBody byte[] getImageWithMediaType() throws IOException {
-        InputStream in = getClass()
-                .getResourceAsStream("/com/baeldung/produceimage/image.jpg");
-        return IOUtils.toByteArray(in);
-    }
-
-    /** Esta clase es para recibir un archivo generico
-    @GetMapping(value = "/image")
-    public @ResponseBody byte[] getImage() throws IOException {
-        InputStream in = getClass()
-                .getResourceAsStream("/com/baeldung/produceimage/image.jpg");
-        return IOUtils.toByteArray(in);
-    }
-     **/
-
 
 }
