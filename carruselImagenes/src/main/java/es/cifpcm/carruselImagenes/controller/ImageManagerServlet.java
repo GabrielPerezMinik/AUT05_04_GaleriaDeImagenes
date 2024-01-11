@@ -3,7 +3,10 @@ package es.cifpcm.carruselImagenes.controller;
 //import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.*;
@@ -53,6 +56,12 @@ public class ImageManagerServlet {
                 System.out.println("Hubo un problema al abrir el archivo: traza completa "+e.getLocalizedMessage());
             }
         }
+    }
+
+    @PostMapping("/prueba")
+    public String prueba(@RequestParam("fichero") File valorInput) {
+
+        return "/";
     }
 
 

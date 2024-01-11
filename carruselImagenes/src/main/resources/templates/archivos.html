@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Links a imagenes</title>
+</head>
+<body>
+<ul>
+    <li th:each="string : ${strings}">
+        <a th:href="@{'/some/url/' + ${string}}"><span th:text="${string}"></span></a>
+    </li>
+</ul>
+</body>
+</html>
